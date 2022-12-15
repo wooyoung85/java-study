@@ -1,30 +1,20 @@
 package com.woodong.design;
 
-import com.woodong.design.facade.Ftp;
-import com.woodong.design.facade.Reader;
-import com.woodong.design.facade.SftpClient;
-import com.woodong.design.facade.Writer;
+import com.woodong.design.strategy.*;
 
 public class Main {
     public static void main(String[] args) {
-        Ftp ftpClient = new Ftp("www.foo.co.kr", 22, "/home/etc");
-        ftpClient.connect();
-        ftpClient.moveDirectory();
-        Writer writer = new Writer("text.tmp");
-        writer.fileConnect();
-        writer.write();
-        Reader reader = new Reader("text.tmp");
-        reader.fileConnect();
-        reader.fileRead();
+        Encoder encoder = new Encoder();
+        EncodingStrategy normal = new NormalStrategy();
+        EncodingStrategy base64 = new Base64Strategy();
+        String message = "hello java";
+        encoder.setEncodingStrategy(base64);
+        System.out.println(encoder.getMessage(message));
 
-        reader.fileDisconnect();
-        writer.fileDisconnect();
-        ftpClient.disConnect();
+        encoder.setEncodingStrategy(normal);
+        System.out.println(encoder.getMessage(message));
 
-        SftpClient sftpClient = new SftpClient("www.foo.co.kr", 22, "/home/etc", "text.tmp");
-        sftpClient.connect();
-        sftpClient.write();
-        sftpClient.read();
-        sftpClient.disConnect();
+        encoder.setEncodingStrategy(new AppendStrategy());
+        System.out.println(encoder.getMessage(message));
     }
 }
