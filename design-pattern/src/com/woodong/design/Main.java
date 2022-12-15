@@ -1,18 +1,30 @@
 package com.woodong.design;
 
-import com.woodong.design.observer.Button;
-import com.woodong.design.observer.IButtonListener;
+import com.woodong.design.facade.Ftp;
+import com.woodong.design.facade.Reader;
+import com.woodong.design.facade.SftpClient;
+import com.woodong.design.facade.Writer;
 
 public class Main {
     public static void main(String[] args) {
-        Button button = new Button("버튼");
-        button.addListener(event -> {
-            System.out.println(event);
-        });
-        button.click("메시지 전달 : click 1");
-        button.click("메시지 전달 : click 2");
-        button.click("메시지 전달 : click 3");
-        button.click("메시지 전달 : click 4");
-        button.click("메시지 전달 : click 5");
+        Ftp ftpClient = new Ftp("www.foo.co.kr", 22, "/home/etc");
+        ftpClient.connect();
+        ftpClient.moveDirectory();
+        Writer writer = new Writer("text.tmp");
+        writer.fileConnect();
+        writer.write();
+        Reader reader = new Reader("text.tmp");
+        reader.fileConnect();
+        reader.fileRead();
+
+        reader.fileDisconnect();
+        writer.fileDisconnect();
+        ftpClient.disConnect();
+
+        SftpClient sftpClient = new SftpClient("www.foo.co.kr", 22, "/home/etc", "text.tmp");
+        sftpClient.connect();
+        sftpClient.write();
+        sftpClient.read();
+        sftpClient.disConnect();
     }
 }
