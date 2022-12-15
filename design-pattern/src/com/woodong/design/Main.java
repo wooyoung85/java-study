@@ -1,9 +1,15 @@
 package com.woodong.design;
 
 import com.woodong.design.adapter.*;
+import com.woodong.design.aop.AopBrowser;
+import com.woodong.design.proxy.Browser;
+import com.woodong.design.proxy.BrowserProxy;
+import com.woodong.design.proxy.IBrowser;
 import com.woodong.design.singleton.AClazz;
 import com.woodong.design.singleton.BClazz;
 import com.woodong.design.singleton.SocketClient;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
     public static void main(String[] args) {
@@ -26,9 +32,35 @@ public class Main {
         AirConditioner airConditioner = new AirConditioner();
         adapter = new SocketAdapter(airConditioner);
         connect(adapter);
+
+        IBrowser browser = new Browser("www.naver.com");
+        browser.show();
+        browser.show();
+        browser.show();
+
+        browser = new BrowserProxy("www.naver.com");
+        browser.show();
+        browser.show();
+        browser.show();
+
+        AtomicLong start = new AtomicLong();
+        AtomicLong end = new AtomicLong();
+        browser = new AopBrowser("www.naver.com",
+                () -> {
+                    System.out.println("before");
+                    start.set(System.currentTimeMillis());
+                },
+                () -> {
+                    long now = System.currentTimeMillis();
+                    end.set(now - start.get());
+                });
+        browser.show();
+        System.out.println("loading time : " + end.get());
+        browser.show();
+        System.out.println("loading time : " + end.get());
     }
 
-    public static void connect(Electronic110V electronic110V){
+    public static void connect(Electronic110V electronic110V) {
         electronic110V.powerOn();
     }
 }
